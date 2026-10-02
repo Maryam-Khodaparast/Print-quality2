@@ -25,3 +25,39 @@ measures against the old selection, and what it still cannot do.
 addpath tests
 pqInspectScan('/path/to/your/scans')   % how your own scans score
 ```
+
+# Print quality: head separation
+
+Measures the cross web displacement of one printhead relative to its
+neighbour, signed, from a printed chart.
+
+| file | what it does |
+|---|---|
+| `pqHeadJoins.m` | the head to head joins, and whether their routing has been confirmed |
+| `pqSplitXPattern.m` | the primary band: crossing diagonal marks, A B A groups, same head controls, ink witness |
+| `pqMultiMarkPattern.m` | the cross check band: plain marks on three baselines, which also measures scanner scale |
+| `pqHeadSeparationChart.m`, `pqHeadSeparationBitmap.m` | the whole chart, and which physical head prints each pixel |
+| `measureHeadSeparation.m` | scan plus nominal geometry in, signed displacement and a verdict out |
+| `pqAnalyseSplitX.m`, `pqAnalyseMultiMark.m` | the two analysers |
+| `pqInkGain.m`, `pqWitnessBand.m` | how far each head's ink has grown past the edges it aimed at |
+| `pqArmCentres.m`, `pqMarkCentre.m`, `pqLocalProfile.m`, `pqRobustLineFit.m` | the subpixel measurements |
+| `pqRasteriseRects.m`, `pqRenderPattern.m`, `pqRegisterPattern.m` | geometry to pixels, and finding the band on a scan |
+| `pqHeadSeparationOverlay.m`, `pqPlotHeadSeparation.m` | what a debug figure has to show, and the drawing of it. Called by nothing in the analysis |
+| `runHeadSeparation.m` | make the charts, or measure a folder of scans |
+
+The result is signed and stays signed: nothing takes an absolute value or
+folds a result onto a pattern pitch. A result comes back with an uncertainty
+and a verdict, and a band that cannot answer is refused rather than guessed.
+[docs/head-separation.md](docs/head-separation.md) says how it works, what it
+measures on synthetic scans, the one thing no pattern of this kind can do, and
+what has to be printed on the real machine before the numbers mean anything.
+
+```matlab
+runHeadSeparation('demo')                  % print, scan and measure, no hardware
+runHeadSeparation('bitmap','/tmp/chart')   % the chart, one bitmap per head
+runHeadSeparation('measure','/tmp/scans')  % every scan in a folder
+
+addpath tests
+pqRunHeadSeparationSelfTests               % the checks that have to hold
+pqHeadSeparationBenchmark                  % accuracy and the stress matrix
+```
